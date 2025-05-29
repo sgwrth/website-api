@@ -19,14 +19,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/appuser', [AppUserController::class, 'findAll']);
+Route::get('/appuser', [AppUserController::class, 'findAll'])
+    ->middleware('auth:sanctum');
 
 Route::post('/register', [AppUserController::class, 'register']);
 
-Route::post('/login', [AppUserController::class, 'login']);
-
-Route::post('/tokens/create', function (Request $request) {
-    $token = $request->user()->createToken($request->token_name);
-});
+// Route::post('/tokens/create', function (Request $request) {
+//     $token = $request->user()->createToken($request->token_name);
+// });
 
 Route::post('/login', [AppUserController::class, 'login']);
+
+Route::get('/unauthorized', function (Request $request) {
+    return response()->json(['message' => 'unauthorized']);
+})->name('unauthorized'); // named the route to make it available to 'route(<name of route>)' redirection

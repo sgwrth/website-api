@@ -15,7 +15,7 @@ class AppUserController extends Controller
         return DB::select($selectStatement, []);
     }
 
-    public function usersFound($email) {
+    private function usersFound($email) {
         $selectStatement = ltrim(<<<'SQL'
             SELECT COUNT(*) FROM app_user WHERE email = ?
         SQL);
@@ -25,7 +25,7 @@ class AppUserController extends Controller
     public function register(Request $request) {
         $usersFound = $this->usersFound($request['email']);
         if ($usersFound > 0) {
-            return response()->json(['message' => 'error: email already exists']);
+            return response()->json(['message' => 'error: email already existss']);
         }
         $hashedPassword = Hash::make($request['password']);
         $insertStatement = ltrim(<<<'SQL'
@@ -47,20 +47,49 @@ class AppUserController extends Controller
         $selectOneStatement = ltrim(<<<'SQL'
             SELECT * FROM app_user WHERE email = :email
         SQL);
-        $user = DB::selectOne($selectOneStatement, [
-            'email' => $request['email']
-        ]);
+        $user = DB::selectOne($selectOneStatement, ['email' => $request['email']]);
         if (!$user) {
-            return response()->json(['message' => 'login failed: invalid credentials'], 401);
+            return response()->json(['message' => 'login failed: invalid credentials' ], 401);
         }
         if (Hash::check($request['password'], $user->password)) {
-            $userModel = \App\Models\AppUser::find($user->id);
-            $token = $userModel->createToken($user->username.'-API_Token')->plainTextToken;
+            $userModel = \App\Models\AppUser::find($user->id); // object -> Eloq. model, enabling createToken() use
+            if (!$this->existsApiToken($user->id)) {
+                $token = $this->createToken($userModel, $user->username)->plainTextToken;
+            } else {
+                DB::transaction(function () use ($user, $userModel, &$token) {
+                    $this->deleteToken($user->id);
+                    $token = $this->createToken($userModel, $user->username)->plainTextToken;
+                });
+            }
+            if (!$token) {
+                return response()->json(['message' => 'error: something went wrong'], 500);
+            }
             return response()->json([
                 'message' => 'login successful',
                 'token' => $token,
             ]);
         }
         return response()->json(['message' => 'login failed: invalid credentials'], 401);
+    }
+
+    private function existsApiToken($userId) {
+        $selectOneStatement = ltrim(<<<'SQL'
+            SELECT * FROM personal_access_tokens
+                WHERE tokenable_id = :userId
+        SQL);
+        $result = DB::selectOne($selectOneStatement, ['userId' => $userId]);
+        return ($result) ? true : false;
+    }
+
+    private function createToken($userModel, $username) {
+        return $userModel->createToken($username.'-API_Token');
+    }
+
+    private function deleteToken($userId) {
+        $deleteStatement = ltrim(<<<'SQL'
+            DELETE FROM personal_access_tokens
+                WHERE tokenable_id = :userId
+        SQL);
+        return DB::delete($deleteStatement, ['userId' => $userId]);
     }
 }
