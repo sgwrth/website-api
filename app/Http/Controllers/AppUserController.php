@@ -23,17 +23,17 @@ class AppUserController extends Controller
     }
 
     public function register(Request $request) {
-        $usersFound = $this->usersFound($request["email"]);
+        $usersFound = $this->usersFound($request['email']);
         if ($usersFound > 0) {
             return response()->json(['message' => 'error: email already exists']);
         }
-        $hashedPassword = Hash::make($request["password"]);
+        $hashedPassword = Hash::make($request['password']);
         $insertStatement = ltrim(<<<'SQL'
             INSERT INTO app_user (username, email, password) values (:username, :email, :password)
         SQL);
         $success = DB::insert($insertStatement, [
-            'username' => $request["username"],
-            'email' => $request["email"],
+            'username' => $request['username'],
+            'email' => $request['email'],
             'password' => $hashedPassword,
         ]);
         if ($success) {
@@ -41,5 +41,26 @@ class AppUserController extends Controller
         } else {
             return response()->json(['message' => 'something went wrong ...'], 500);
         }
+    }
+
+    public function login(Request $request) {
+        $selectOneStatement = ltrim(<<<'SQL'
+            SELECT * FROM app_user WHERE email = :email
+        SQL);
+        $user = DB::selectOne($selectOneStatement, [
+            'email' => $request['email']
+        ]);
+        if (!$user) {
+            return response()->json(['message' => 'login failed: invalid credentials'], 401);
+        }
+        if (Hash::check($request['password'], $user->password)) {
+            $userModel = \App\Models\AppUser::find($user->id);
+            $token = $userModel->createToken($user->username.'-API_Token')->plainTextToken;
+            return response()->json([
+                'message' => 'login successful',
+                'token' => $token,
+            ]);
+        }
+        return response()->json(['message' => 'login failed: invalid credentials'], 401);
     }
 }

@@ -22,3 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/appuser', [AppUserController::class, 'findAll']);
 
 Route::post('/register', [AppUserController::class, 'register']);
+
+Route::post('/login', [AppUserController::class, 'login']);
+
+Route::post('/tokens/create', function (Request $request) {
+    $token = $request->user()->createToken($request->token_name);
+});
+
+Route::post('/login', [AppUserController::class, 'login']);
