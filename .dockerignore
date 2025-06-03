@@ -1,0 +1,9 @@
+.dockerignore
+.env
+.env.example
+.git
+.gitattributes
+.gitignore
+.prod.env
+vendor/
+Dockerfile
