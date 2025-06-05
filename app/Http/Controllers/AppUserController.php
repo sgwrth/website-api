@@ -67,6 +67,8 @@ class AppUserController extends Controller
             return response()->json([
                 'message' => 'login successful',
                 'token' => $token,
+                'username' => $user->username,
+                'email' => $user->email,
             ]);
         }
         return response()->json(['message' => 'login failed: invalid credentials'], 401);
