@@ -12,7 +12,7 @@ class PostDto
         public string $title,
         public string $text,
         public string $author,
-        public string $author_email,
+        public string $authorEmail,
         public string $created,
         public string $updated,
     ) {}
@@ -24,7 +24,7 @@ class PostDto
             title: $data->title,
             text: $data->text,
             author: $data->author,
-            author_email: $data->author_email,
+            authorEmail: $data->author_email,
             created: $data->created,
             updated: $data->updated,
         );

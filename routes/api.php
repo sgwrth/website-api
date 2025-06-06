@@ -33,3 +33,5 @@ Route::get('/unauthorized', function (Request $request) {
 Route::get('/post', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
 
 Route::post('/post', [PostController::class, 'createPost'])->middleware('auth:sanctum');
+
+Route::put('/post', [PostController::class, 'updatePost'])->middleware('auth:sanctum');

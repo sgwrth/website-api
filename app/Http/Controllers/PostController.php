@@ -21,6 +21,7 @@ class PostController extends Controller
             FROM post
             JOIN app_user ON post.app_user = app_user.id
             WHERE app_user.id = :userId
+            ORDER BY created DESC
         SQL);
         $user = auth()->user();
         $postsByUser = DB::select($selectStatement, [
@@ -49,5 +50,23 @@ class PostController extends Controller
         } else {
             return response()->json(['message' => 'some error occured, no post created'], 500);
         }
+    }
+
+    public function updatePost(Request $request) {
+        $user = auth()->user();
+
+        $updateStatement = ltrim(<<<'SQL'
+            UPDATE post
+            SET title = :title
+                , text = :text
+            WHERE id = :postId
+                AND app_user = :appUser
+        SQL);
+        $updatedRow = DB::update($updateStatement, [
+            'title' => $request->title,
+            'text' => $request->text,
+            'postId' => $request->postId,
+            'appUser' => $user->id,
+        ]);
     }
 }
