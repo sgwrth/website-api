@@ -23,25 +23,22 @@ class PostController extends Controller
             WHERE app_user.id = :userId
             ORDER BY created DESC
         SQL);
-        $user = auth()->user();
         $postsByUser = DB::select($selectStatement, [
-            'userId' => $user->id
+            'userId' => auth()->user()->id,
         ]);
         $postsByUserDto = [];
         foreach ($postsByUser as $post) {
             $postsByUserDto[] = PostDto::fromStdClass($post);
         }
         return $postsByUserDto;
-        // return $postsByUser;
     }
 
     public function createPost(Request $request) {
-        $user = auth()->user();
         $insertStatement = ltrim(<<<'SQL'
             INSERT INTO post (app_user, title, text) values (:appUser, :title, :text)
         SQL);
         $wasPostInserted = DB::insert($insertStatement, [
-            'appUser' => $user->id,
+            'appUser' => auth()->user()->id,
             'title' => $request['title'],
             'text' => $request['text'],
         ]);
@@ -52,9 +49,7 @@ class PostController extends Controller
         }
     }
 
-    public function updatePost(Request $request) {
-        $user = auth()->user();
-
+    public function updatePost(Request $request, $id) {
         $updateStatement = ltrim(<<<'SQL'
             UPDATE post
             SET title = :title
@@ -65,8 +60,23 @@ class PostController extends Controller
         $updatedRow = DB::update($updateStatement, [
             'title' => $request->title,
             'text' => $request->text,
-            'postId' => $request->postId,
-            'appUser' => $user->id,
+            'postId' => $id,
+            'appUser' => auth()->user()->id,
         ]);
+    }
+
+    public function getPostById($id) {
+        $user = auth()->user();
+        $selectStatement = ltrim(<<<'SQL'
+            SELECT title, text
+            FROM post
+            WHERE app_user = :appUser
+                AND id = :postId
+        SQL);
+        $post = DB::select($selectStatement, [
+            'appUser' => auth()->user()->id,
+            'postId' => $id,
+        ]);
+        return $post;
     }
 }

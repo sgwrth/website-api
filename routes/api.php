@@ -16,22 +16,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::get('/appuser', [AppUserController::class, 'findAll'])->middleware('auth:sanctum');
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('/register', [AppUserController::class, 'register']);
 
 Route::post('/login', [AppUserController::class, 'login']);
 
+Route::get('/appusers', [AppUserController::class, 'findAll'])->middleware('auth:sanctum');
+
 Route::get('/unauthorized', function (Request $request) {
     return response()->json(['message' => 'unauthorized']);
 })->name('unauthorized'); // named the route to make it available to 'route(<name of route>)' redirection
 
-Route::get('/post', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
+Route::get('/posts', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
 
-Route::post('/post', [PostController::class, 'createPost'])->middleware('auth:sanctum');
+Route::post('/posts', [PostController::class, 'createPost'])->middleware('auth:sanctum');
 
-Route::put('/post', [PostController::class, 'updatePost'])->middleware('auth:sanctum');
+Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum');
+
+Route::get('/posts/{id}', [PostController::class, 'getPostById'])->middleware('auth:sanctum');
