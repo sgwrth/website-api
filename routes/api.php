@@ -32,7 +32,7 @@ Route::get('/unauthorized', function (Request $request) {
 
 Route::get('/posts', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
 
-Route::post('/posts', [PostController::class, 'createPost'])->middleware('auth:sanctum');
+Route::post('/posts', [PostController::class, 'createPost'])->middleware(['auth:sanctum', 'role:admin']);
 
 Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum');
 

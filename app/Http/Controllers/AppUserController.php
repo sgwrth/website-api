@@ -45,7 +45,9 @@ class AppUserController extends Controller
 
     public function login(Request $request) {
         $selectOneStatement = ltrim(<<<'SQL'
-            SELECT * FROM app_user WHERE email = :email
+            SELECT *
+            FROM app_user
+            WHERE email = :email
         SQL);
         $user = DB::selectOne($selectOneStatement, ['email' => $request['email']]);
         if (!$user) {
@@ -69,6 +71,7 @@ class AppUserController extends Controller
                 'token' => $token,
                 'username' => $user->username,
                 'email' => $user->email,
+                'role' => $userModel->role->name,
             ]);
         }
         return response()->json(['message' => 'login failed: invalid credentials'], 401);
@@ -76,8 +79,9 @@ class AppUserController extends Controller
 
     private function existsApiToken($userId) {
         $selectOneStatement = ltrim(<<<'SQL'
-            SELECT * FROM personal_access_tokens
-                WHERE tokenable_id = :userId
+            SELECT *
+            FROM personal_access_tokens
+            WHERE tokenable_id = :userId
         SQL);
         $result = DB::selectOne($selectOneStatement, ['userId' => $userId]);
         return ($result) ? true : false;
@@ -90,7 +94,7 @@ class AppUserController extends Controller
     private function deleteToken($userId) {
         $deleteStatement = ltrim(<<<'SQL'
             DELETE FROM personal_access_tokens
-                WHERE tokenable_id = :userId
+            WHERE tokenable_id = :userId
         SQL);
         return DB::delete($deleteStatement, ['userId' => $userId]);
     }

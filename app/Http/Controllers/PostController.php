@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 class PostController extends Controller
 {
     public function getAllPosts() {
-        # get all posts from logged in user
         $selectStatement = ltrim(<<<'SQL'
             SELECT post.id
                 , post.title
@@ -20,12 +19,9 @@ class PostController extends Controller
                 , app_user.email AS author_email
             FROM post
             JOIN app_user ON post.app_user = app_user.id
-            WHERE app_user.id = :userId
             ORDER BY created DESC
         SQL);
-        $postsByUser = DB::select($selectStatement, [
-            'userId' => auth()->user()->id,
-        ]);
+        $postsByUser = DB::select($selectStatement, []);
         $postsByUserDto = [];
         foreach ($postsByUser as $post) {
             $postsByUserDto[] = PostDto::fromStdClass($post);
