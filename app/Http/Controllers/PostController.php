@@ -62,14 +62,31 @@ class PostController extends Controller
     }
 
     public function getPostById($id) {
-        $selectStatement = ltrim(<<<'SQL'
-            SELECT title, text
+        // $selectStatement = ltrim(<<<'SQL'
+        //     SELECT id, title, text, created_at
+        //     FROM post
+        //     WHERE id = :postId
+        // SQL);
+        $selectStatementTwo = ltrim(<<<'SQL'
+            SELECT post.id
+                , post.title
+                , post.text
+                , post.created_at AS created
+                , post.updated_at AS updated
+                , app_user.username AS author
+                , app_user.email AS author_email
             FROM post
-            WHERE id = :postId
+            JOIN app_user ON post.app_user = app_user.id
+            WHERE post.id = :postId
         SQL);
-        $post = DB::select($selectStatement, [
+
+        $post = DB::select($selectStatementTwo, [
             'postId' => $id,
         ]);
-        return $post;
+        $postDto = [];
+        foreach ($post as $singlePost) {
+            $postDto[] = PostDto::fromStdClass($singlePost);
+        }
+        return $postDto;
     }
 }
