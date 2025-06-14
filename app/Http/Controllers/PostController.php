@@ -62,15 +62,12 @@ class PostController extends Controller
     }
 
     public function getPostById($id) {
-        $user = auth()->user();
         $selectStatement = ltrim(<<<'SQL'
             SELECT title, text
             FROM post
-            WHERE app_user = :appUser
-                AND id = :postId
+            WHERE id = :postId
         SQL);
         $post = DB::select($selectStatement, [
-            'appUser' => auth()->user()->id,
             'postId' => $id,
         ]);
         return $post;
