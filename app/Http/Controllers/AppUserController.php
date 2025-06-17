@@ -22,6 +22,26 @@ class AppUserController extends Controller
         return DB::scalar($selectStatement, [$email]);
     }
 
+    public function getMe() {
+        $user = auth()->user();
+        $selectStatement = ltrim(<<<'SQL'
+            SELECT u.id
+                , u.email
+                , u.username
+                , r.name AS role
+                , u.created_at AS created
+                , u.updated_at AS updated
+            FROM app_user AS u
+                , roles AS r
+            WHERE u.id = :userId
+                AND r.id = u.role_id
+        SQL);
+        $user = DB::select($selectStatement, [
+            'userId' => $user->id,
+        ]);
+        return $user;
+    }
+
     public function register(Request $request) {
         $usersFound = $this->usersFound($request['email']);
         if ($usersFound > 0) {

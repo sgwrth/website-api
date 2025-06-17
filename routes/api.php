@@ -26,6 +26,8 @@ Route::post('/login', [AppUserController::class, 'login']);
 
 Route::get('/appusers', [AppUserController::class, 'findAll'])->middleware('auth:sanctum');
 
+Route::get('/me', [AppUserController::class, 'getMe'])->middleware('auth:sanctum');
+
 Route::get('/unauthorized', function (Request $request) {
     return response()->json(['message' => 'unauthorized']);
 })->name('unauthorized'); // named the route to make it available to 'route(<name of route>)' redirection
