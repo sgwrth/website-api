@@ -39,3 +39,5 @@ Route::post('/posts', [PostController::class, 'createPost'])->middleware(['auth:
 Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum');
 
 Route::get('/posts/{id}', [PostController::class, 'getPostById'])->middleware('auth:sanctum');
+
+Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])->middleware('auth:sanctum');

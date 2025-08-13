@@ -62,12 +62,7 @@ class PostController extends Controller
     }
 
     public function getPostById($id) {
-        // $selectStatement = ltrim(<<<'SQL'
-        //     SELECT id, title, text, created_at
-        //     FROM post
-        //     WHERE id = :postId
-        // SQL);
-        $selectStatementTwo = ltrim(<<<'SQL'
+        $selectStatement = ltrim(<<<'SQL'
             SELECT post.id
                 , post.title
                 , post.text
@@ -80,7 +75,7 @@ class PostController extends Controller
             WHERE post.id = :postId
         SQL);
 
-        $post = DB::select($selectStatementTwo, [
+        $post = DB::select($selectStatement, [
             'postId' => $id,
         ]);
         $postDto = [];
@@ -88,5 +83,17 @@ class PostController extends Controller
             $postDto[] = PostDto::fromStdClass($singlePost);
         }
         return $postDto;
+    }
+
+    public function deletePostById($id) {
+        $deleteStatement = ltrim(<<<'SQL'
+            DELETE FROM post
+            WHERE post.id = :postId
+        SQL);
+
+        $deleted = DB::delete($deleteStatement, [
+            'postId' => $id,
+        ]);
+        return $deleted;
     }
 }
