@@ -74,7 +74,6 @@ class PostController extends Controller
             JOIN app_user ON post.app_user = app_user.id
             WHERE post.id = :postId
         SQL);
-
         $post = DB::select($selectStatement, [
             'postId' => $id,
         ]);
@@ -90,7 +89,6 @@ class PostController extends Controller
             DELETE FROM post
             WHERE post.id = :postId
         SQL);
-
         $deleted = DB::delete($deleteStatement, [
             'postId' => $id,
         ]);

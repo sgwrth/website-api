@@ -34,10 +34,10 @@ Route::get('/unauthorized', function (Request $request) {
 
 Route::get('/posts', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
 
-Route::post('/posts', [PostController::class, 'createPost'])->middleware(['auth:sanctum', 'role:admin']);
+Route::post('/posts', [PostController::class, 'createPost'])->middleware(['auth:sanctum', 'role:user,admin']);
 
-Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum');
+Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum', 'role:user,admin');
 
 Route::get('/posts/{id}', [PostController::class, 'getPostById'])->middleware('auth:sanctum');
 
-Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])->middleware('auth:sanctum');
+Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])->middleware('auth:sanctum', 'role:user,admin');
