@@ -22,6 +22,26 @@ class AppUserController extends Controller
         return DB::scalar($selectStatement, [$email]);
     }
 
+    public function getMe() {
+        $user = auth()->user();
+        $selectStatement = ltrim(<<<'SQL'
+            SELECT u.id
+                , u.email
+                , u.username
+                , r.name AS role
+                , u.created_at AS created
+                , u.updated_at AS updated
+            FROM app_user AS u
+                , roles AS r
+            WHERE u.id = :userId
+                AND r.id = u.role_id
+        SQL);
+        $user = DB::select($selectStatement, [
+            'userId' => $user->id,
+        ]);
+        return $user;
+    }
+
     public function register(Request $request) {
         $usersFound = $this->usersFound($request['email']);
         if ($usersFound > 0) {
@@ -45,7 +65,9 @@ class AppUserController extends Controller
 
     public function login(Request $request) {
         $selectOneStatement = ltrim(<<<'SQL'
-            SELECT * FROM app_user WHERE email = :email
+            SELECT *
+            FROM app_user
+            WHERE email = :email
         SQL);
         $user = DB::selectOne($selectOneStatement, ['email' => $request['email']]);
         if (!$user) {
@@ -67,6 +89,9 @@ class AppUserController extends Controller
             return response()->json([
                 'message' => 'login successful',
                 'token' => $token,
+                'username' => $user->username,
+                'email' => $user->email,
+                'role' => $userModel->role->name,
             ]);
         }
         return response()->json(['message' => 'login failed: invalid credentials'], 401);
@@ -74,8 +99,9 @@ class AppUserController extends Controller
 
     private function existsApiToken($userId) {
         $selectOneStatement = ltrim(<<<'SQL'
-            SELECT * FROM personal_access_tokens
-                WHERE tokenable_id = :userId
+            SELECT *
+            FROM personal_access_tokens
+            WHERE tokenable_id = :userId
         SQL);
         $result = DB::selectOne($selectOneStatement, ['userId' => $userId]);
         return ($result) ? true : false;
@@ -88,7 +114,7 @@ class AppUserController extends Controller
     private function deleteToken($userId) {
         $deleteStatement = ltrim(<<<'SQL'
             DELETE FROM personal_access_tokens
-                WHERE tokenable_id = :userId
+            WHERE tokenable_id = :userId
         SQL);
         return DB::delete($deleteStatement, ['userId' => $userId]);
     }
