@@ -21,10 +21,10 @@ class PostDto
     {
         return new self(
             id: $data->id,
-            title: $data->title,
-            text: $data->text,
-            author: $data->author,
-            authorEmail: $data->author_email,
+            title: $data->title ?? '',
+            text: $data->text ?? '',
+            author: $data->author ?? '',
+            authorEmail: $data->author_email ?? '',
             created: $data->created,
             updated: $data->updated,
         );

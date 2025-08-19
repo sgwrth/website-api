@@ -39,9 +39,13 @@ class PostController extends Controller
             'text' => $request['text'],
         ]);
         if ($wasPostInserted) {
-            return response()->json(['message' => 'post was created'], 201);
+            return response()->json([
+                'message' => 'post was created'
+            ], 201);
         } else {
-            return response()->json(['message' => 'some error occured, no post created'], 500);
+            return response()->json([
+                'message' => 'some error occured, no post created'
+            ], 500);
         }
     }
 
