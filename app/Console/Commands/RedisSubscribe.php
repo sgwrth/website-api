@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Redis;
+use WebSocket\Client;
 
 class RedisSubscribe extends Command
 {
@@ -26,8 +27,17 @@ class RedisSubscribe extends Command
      */
     public function handle()
     {
-        Redis::subscribe(['test-channel'], function (string $message) {
+        $ws = new Client("ws://172.19.39.225:8765");
+
+        Redis::subscribe(['test-channel'], function (string $message) use ($ws) {
             echo $message;
+            $messageJson = json_decode($message, true);
+
+            if ($messageJson['message'] != null) {
+                echo $messageJson['message'];
+                $ws->text($messageJson['message']);
+            }
+
         });
     }
 }
