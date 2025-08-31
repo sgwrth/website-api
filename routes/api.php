@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppUserController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RedisController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,3 +38,5 @@ Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('au
 Route::get('/posts/{id}', [PostController::class, 'getPostById'])->middleware('auth:sanctum');
 
 Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])->middleware('auth:sanctum', 'role:user,admin');
+
+Route::post('/redis', [RedisController::class, 'sendMessage']);
