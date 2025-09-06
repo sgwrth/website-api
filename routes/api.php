@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppUserController;
+use App\Http\Controllers\ConnectFourController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RedisController;
 use Illuminate\Http\Request;
@@ -21,22 +22,32 @@ Route::post('/register', [AppUserController::class, 'register']);
 
 Route::post('/login', [AppUserController::class, 'login']);
 
-Route::get('/appusers', [AppUserController::class, 'findAll'])->middleware('auth:sanctum');
+Route::get('/appusers', [AppUserController::class, 'findAll'])
+    ->middleware('auth:sanctum');
 
-Route::get('/me', [AppUserController::class, 'getMe'])->middleware('auth:sanctum');
+Route::get('/me', [AppUserController::class, 'getMe'])
+    ->middleware('auth:sanctum');
 
+// Named the route to make it available to 'route(<name of route>)' redirection.
 Route::get('/unauthorized', function (Request $request) {
     return response()->json(['message' => 'unauthorized']);
-})->name('unauthorized'); // named the route to make it available to 'route(<name of route>)' redirection
+})->name('unauthorized');
 
-Route::get('/posts', [PostController::class, 'getAllPosts'])->middleware('auth:sanctum');
+Route::get('/posts', [PostController::class, 'getAllPosts'])
+    ->middleware('auth:sanctum');
 
-Route::post('/posts', [PostController::class, 'createPost'])->middleware(['auth:sanctum', 'role:user,admin']);
+Route::post('/posts', [PostController::class, 'createPost'])
+    ->middleware(['auth:sanctum', 'role:user,admin']);
 
-Route::put('/posts/{id}', [PostController::class, 'updatePost'])->middleware('auth:sanctum', 'role:user,admin');
+Route::put('/posts/{id}', [PostController::class, 'updatePost'])
+    ->middleware('auth:sanctum', 'role:user,admin');
 
-Route::get('/posts/{id}', [PostController::class, 'getPostById'])->middleware('auth:sanctum');
+Route::get('/posts/{id}', [PostController::class, 'getPostById'])
+    ->middleware('auth:sanctum');
 
-Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])->middleware('auth:sanctum', 'role:user,admin');
+Route::delete('/posts/{id}', [PostController::class, 'deletePostById'])
+    ->middleware('auth:sanctum', 'role:user,admin');
 
 Route::post('/redis', [RedisController::class, 'sendMessage']);
+
+Route::post('/connectfour', [ConnectFourController::class, 'play']);
