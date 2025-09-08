@@ -12,6 +12,6 @@ class ConnectFourController extends Controller
 
         # Http automatically converts $payload to JSON.
         $response = Http::post('http://localhost:5000/', $payload);
-        return response()->json($response->json(), $response->status());
+        return response()->json($response->json());
     }
 }
